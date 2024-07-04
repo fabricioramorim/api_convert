@@ -14,6 +14,7 @@ func main() {
 	// Rotas
 	router.HandleFunc("/info", getInfoMe).Methods("GET")
 	router.HandleFunc("/convert", convertImage).Methods("POST")
+	router.HandleFunc("/convert/webp", convertImageWebp).Methods("POST")
 
 	// Inicia o servidor
 	fmt.Println("Servidor rodando na porta 8080")

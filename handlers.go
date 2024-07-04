@@ -34,7 +34,16 @@ func getInfoMe(w http.ResponseWriter, r *http.Request) {
 }
 
 func convertImage(w http.ResponseWriter, r *http.Request) {
-	// Lê a imagem enviada
+	info := `
+	{
+		"Error": "Invalid Call, format is missing",
+	}`
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(info))
+}
+
+func convertImageWebp(w http.ResponseWriter, r *http.Request) {
+	// Read
 	file, _, err := r.FormFile("image")
 	if err != nil {
 		http.Error(w, "Erro ao ler a imagem", http.StatusBadRequest)
@@ -42,16 +51,16 @@ func convertImage(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	// Decodifica a imagem
+	// Decoder
 	img, _, err := image.Decode(file)
 	if err != nil {
 		http.Error(w, "Erro ao decodificar a imagem", http.StatusBadRequest)
 		return
 	}
 
-	// Converte para PNG (ou outro formato desejado)
+	// Convert
 	newImg := imaging.Clone(img)
-	tempFile, err := os.CreateTemp("", "converted_image.*.png")
+	tempFile, err := os.CreateTemp("", "converted_image.*.webp")
 	if err != nil {
 		http.Error(w, "Erro ao criar arquivo temporário", http.StatusInternalServerError)
 		return
@@ -59,14 +68,14 @@ func convertImage(w http.ResponseWriter, r *http.Request) {
 	defer os.Remove(tempFile.Name())
 	defer tempFile.Close()
 
-	err = png.Encode(tempFile, newImg)
+	err = webp.Encode(tempFile, newImg)
 	if err != nil {
 		http.Error(w, "Erro ao converter a imagem", http.StatusInternalServerError)
 		return
 	}
 
-	// Envia a imagem convertida como resposta
+	// Send
 	tempFile.Seek(0, 0)
-	w.Header().Set("Content-Type", "image/png")
-	http.ServeContent(w, r, "converted_image.png", time.Now(), tempFile)
+	w.Header().Set("Content-Type", "image/webp")
+	http.ServeContent(w, r, "converted_image.webp", time.Now(), tempFile)
 }
