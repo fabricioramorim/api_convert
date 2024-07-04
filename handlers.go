@@ -12,14 +12,22 @@ import (
 
 func getInfoMe(w http.ResponseWriter, r *http.Request) {
 	// json com as informações da api
-	info := `{
-		"nome": "API de Conversão de Imagens",
-		"descricao": "API para conversão de imagens em diferentes formatos",
-		"versao": "1.0.0"
+	info := `
+	{
+		"name": "API de Conversão de Imagens",
+		"description": "API para conversão de imagens em diferentes formatos",
+		"version": "1.0.0"
 		"autor": "Fabricio Roney de Amorim"
 		"linkedin": "https://www.linkedin.com/in/fabricio-roney/"
 		"github": "https://github.com/fabricioramorim"
-		"caminhos": {"info": "/info", "convert": "/convert"}
+		"handlers": 
+			{
+			"/info": "This handler, describe all about the API", 
+			"/convert": 
+				{
+				"/webp": "Convert source image to WEBP"
+				}
+			}
 	}`
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(info))
